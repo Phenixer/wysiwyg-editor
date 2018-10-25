@@ -56,10 +56,6 @@
      * Check chars on typing.
      */
     function _checkCharNumber (e) {
-
-      // Continue if max is considered a soft limit.
-      if (editor.opts.charCounterMaxSoftLimit === true) return true;
-
       // Continue if infinite characters;
       if (editor.opts.charCounterMax < 0) return true;
 
@@ -70,9 +66,15 @@
       var keyCode = e.which;
 
       if ((!editor.keys.ctrlKey(e) && editor.keys.isCharacter(keyCode)) || (keyCode === $.FE.KEYCODE.IME)) {
-        e.preventDefault();
-        e.stopPropagation();
+        if (editor.opts.charCounterMaxSoftLimit !== true) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
         editor.events.trigger('charCounter.exceeded');
+
+        // Continue if max is considered a soft limit.
+        if (editor.opts.charCounterMaxSoftLimit === true) return true;
 
         return false;
       }
@@ -84,7 +86,6 @@
      * Check chars on paste.
      */
     function _checkCharNumberOnPaste (html) {
-      if (editor.opts.charCounterMaxSoftLimit === true) return html;
       if (editor.opts.charCounterMax < 0) return html;
 
       var len = $('<div>').html(html).text().length;
@@ -92,6 +93,8 @@
       if (len + count() <= editor.opts.charCounterMax) return html;
 
       editor.events.trigger('charCounter.exceeded');
+
+      if (editor.opts.charCounterMaxSoftLimit === true) return html;
 
       return '';
     }
@@ -122,7 +125,7 @@
         }
 
         // Past soft limit indicator
-        if (editor.opts.charCounterMaxSoftLimit === true && count() >= this.opts.charCounterMax) {
+        if (editor.opts.charCounterMaxSoftLimit === true && count() > this.opts.charCounterMax) {
           $counter.addClass('fr-counter-limit');
         } else {
           $counter.removeClass('fr-counter-limit');
