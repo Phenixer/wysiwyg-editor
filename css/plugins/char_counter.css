@@ -40,6 +40,9 @@
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
+.fr-box, .fr-counter-limit {
+  color: red;
+}
 .fr-box.fr-rtl .fr-counter {
   left: 0px;
   right: auto;

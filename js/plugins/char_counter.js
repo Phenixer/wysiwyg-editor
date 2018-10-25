@@ -3,6 +3,7 @@
  * License https://froala.com/wysiwyg-editor/terms/
  * Copyright 2014-2018 Froala Labs
  */
+/*eslint-disable*/
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
@@ -36,7 +37,8 @@
   // Extend defaults.
   $.extend($.FE.DEFAULTS, {
     charCounterMax: -1,
-    charCounterCount: true
+    charCounterCount: true,
+    charCounterMaxSoftLimit: false
   });
 
 
@@ -54,6 +56,9 @@
      * Check chars on typing.
      */
     function _checkCharNumber (e) {
+
+      // Continue if max is considered a soft limit.
+      if (editor.opts.charCounterMaxSoftLimit === true) return true;
 
       // Continue if infinite characters;
       if (editor.opts.charCounterMax < 0) return true;
@@ -79,6 +84,7 @@
      * Check chars on paste.
      */
     function _checkCharNumberOnPaste (html) {
+      if (editor.opts.charCounterMaxSoftLimit === true) return html;
       if (editor.opts.charCounterMax < 0) return html;
 
       var len = $('<div>').html(html).text().length;
@@ -113,6 +119,13 @@
           else {
             $counter.css('margin-right', scroll_size);
           }
+        }
+
+        // Past soft limit indicator
+        if (editor.opts.charCounterMaxSoftLimit === true && count() >= this.opts.charCounterMax) {
+          $counter.addClass('fr-counter-limit');
+        } else {
+          $counter.removeClass('fr-counter-limit');
         }
       }
     }
@@ -152,3 +165,4 @@
   }
 
 }));
+
